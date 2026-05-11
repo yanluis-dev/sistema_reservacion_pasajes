@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, MapPin, Users, CreditCard, Download, X, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { useBooking, Booking } from '../contexts/BookingContext';
+import { useNotification } from '../contexts/NotificationContext';
 
 interface BookingsPageProps {
   onNavigate: (page: string) => void;
@@ -8,6 +9,7 @@ interface BookingsPageProps {
 
 const BookingsPage: React.FC<BookingsPageProps> = ({ onNavigate }) => {
   const { bookings, cancelBooking } = useBooking();
+  const { showNotification } = useNotification();
   const [filter, setFilter] = useState<'all' | 'confirmed' | 'pending' | 'cancelled'>('all');
 
   const formatPrice = (price: number) => {
@@ -68,12 +70,23 @@ const BookingsPage: React.FC<BookingsPageProps> = ({ onNavigate }) => {
   const handleCancelBooking = (bookingId: string) => {
     if (window.confirm('¿Estás seguro de que quieres cancelar esta reserva?')) {
       cancelBooking(bookingId);
+      showNotification({
+        type: 'warning',
+        title: 'Reserva Cancelada',
+        message: 'Tu reserva ha sido cancelada exitosamente.',
+        duration: 5000
+      });
     }
   };
 
   const handleDownloadTicket = (booking: Booking) => {
     // Mock ticket download
-    alert('Descargando ticket... (Funcionalidad de demostración)');
+    showNotification({
+      type: 'success',
+      title: 'Descargando Ticket',
+      message: 'Tu ticket está siendo descargado.',
+      duration: 3000
+    });
   };
 
   if (bookings.length === 0) {

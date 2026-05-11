@@ -14,17 +14,19 @@ const SeatSelector: React.FC<SeatSelectorProps> = ({
   onSeatSelect,
   onSeatDeselect
 }) => {
-  // Generate seat layout (6 rows of 4 seats each for buses, 8 rows of 4 for trains)
+  // Generate seat layout (52 seats total: 13 rows of 4 seats each)
   const generateSeats = () => {
     const seats = [];
-    const rows = 8;
+    const totalSeats = 52;
     const seatsPerRow = 4;
+    const rows = Math.ceil(totalSeats / seatsPerRow);
     
+    let seatNumber = 1;
     for (let row = 1; row <= rows; row++) {
       const rowSeats = [];
-      for (let seat = 1; seat <= seatsPerRow; seat++) {
-        const seatNumber = `${row}${String.fromCharCode(64 + seat)}`;
-        rowSeats.push(seatNumber);
+      for (let seat = 1; seat <= seatsPerRow && seatNumber <= totalSeats; seat++) {
+        rowSeats.push(seatNumber.toString());
+        seatNumber++;
       }
       seats.push(rowSeats);
     }
@@ -33,7 +35,7 @@ const SeatSelector: React.FC<SeatSelectorProps> = ({
   };
 
   const seats = generateSeats();
-  const occupiedSeats = ['1A', '1B', '3C', '5D', '7A', '8B']; // Mock occupied seats
+  const occupiedSeats = ['1', '2', '12', '20', '35', '48']; // Mock occupied seats
 
   const getSeatStatus = (seatNumber: string) => {
     if (occupiedSeats.includes(seatNumber)) return 'occupied';

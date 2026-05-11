@@ -3,6 +3,7 @@ import { ArrowLeft, CheckCircle } from 'lucide-react';
 import SeatSelector from '../components/booking/SeatSelector';
 import BookingForm, { BookingData } from '../components/booking/BookingForm';
 import { useBooking } from '../contexts/BookingContext';
+import { useNotification } from '../contexts/NotificationContext';
 
 interface BookingPageProps {
   onNavigate: (page: string) => void;
@@ -10,6 +11,7 @@ interface BookingPageProps {
 
 const BookingPage: React.FC<BookingPageProps> = ({ onNavigate }) => {
   const { selectedRoute, selectedSeats, selectSeat, deselectSeat, addBooking, clearSelection } = useBooking();
+  const { showNotification } = useNotification();
   const [currentStep, setCurrentStep] = useState<'seats' | 'details' | 'confirmation'>('seats');
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
 
@@ -37,6 +39,12 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate }) => {
 
   const handleSeatSelection = () => {
     if (selectedSeats.length > 0) {
+      showNotification({
+        type: 'info',
+        title: 'Asientos seleccionados',
+        message: `Has seleccionado ${selectedSeats.length} asiento(s): ${selectedSeats.join(', ')}`,
+        duration: 3000
+      });
       setCurrentStep('details');
     }
   };
@@ -50,6 +58,15 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate }) => {
       totalPrice: data.totalPrice,
       paymentMethod: data.paymentMethod
     });
+    
+    // Mostrar notificación de éxito
+    showNotification({
+      type: 'success',
+      title: '¡Reserva Confirmada!',
+      message: `Tu reserva para ${selectedSeats.length} asiento(s) ha sido procesada exitosamente.`,
+      duration: 6000
+    });
+    
     setCurrentStep('confirmation');
   };
 

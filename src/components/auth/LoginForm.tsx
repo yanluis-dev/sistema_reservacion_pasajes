@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Loader2, Mail, Lock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNotification } from '../../contexts/NotificationContext';
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
@@ -13,6 +14,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onSuccess }) 
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
+  const { showNotification } = useNotification();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,9 +27,21 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onSuccess }) 
 
     const success = await login(email, password);
     if (success) {
+      showNotification({
+        type: 'success',
+        title: '¡Bienvenido!',
+        message: 'Has iniciado sesión exitosamente.',
+        duration: 4000
+      });
       onSuccess();
     } else {
       setError('Credenciales incorrectas. Intenta con: demo@example.com / password');
+      showNotification({
+        type: 'error',
+        title: 'Error de inicio de sesión',
+        message: 'Las credenciales ingresadas son incorrectas.',
+        duration: 4000
+      });
     }
   };
 

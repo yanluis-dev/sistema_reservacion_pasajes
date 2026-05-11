@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Loader2, Mail, Lock, User, Phone } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNotification } from '../../contexts/NotificationContext';
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
@@ -19,6 +20,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onSuccess 
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const { register, isLoading } = useAuth();
+  const { showNotification } = useNotification();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -48,9 +50,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onSuccess 
 
     const success = await register(formData.name, formData.email, formData.password, formData.phone);
     if (success) {
+      showNotification({
+        type: 'success',
+        title: '¡Cuenta Creada!',
+        message: 'Tu cuenta ha sido creada exitosamente. ¡Bienvenido a ViajeExpress!',
+        duration: 5000
+      });
       onSuccess();
     } else {
       setError('Error al crear la cuenta. Por favor, intenta de nuevo.');
+      showNotification({
+        type: 'error',
+        title: 'Error al registrar',
+        message: 'No se pudo crear tu cuenta. Por favor, intenta de nuevo.',
+        duration: 4000
+      });
     }
   };
 

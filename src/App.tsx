@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { BookingProvider } from './contexts/BookingContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
@@ -54,7 +55,9 @@ const App: React.FC = () => {
     <ThemeProvider>
       <AuthProvider>
         <BookingProvider>
-          <AppContent />
+          <NotificationProvider>
+            <AppContent />
+          </NotificationProvider>
         </BookingProvider>
       </AuthProvider>
     </ThemeProvider>
