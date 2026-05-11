@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, MapPin, Calendar, Users, ArrowRightLeft } from 'lucide-react';
+import React, { useState } from "react";
+import { Search, MapPin, Calendar, Users, ArrowRightLeft } from "lucide-react";
 
 interface SearchFormProps {
   onSearch: (searchParams: SearchParams) => void;
@@ -10,21 +10,35 @@ export interface SearchParams {
   to: string;
   date: string;
   passengers: number;
-  type: 'all' | 'train' | 'bus';
+  type: "all" | "train" | "bus";
 }
 
 const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
-    from: '',
-    to: '',
-    date: '',
+    from: "",
+    to: "",
+    date: "",
     passengers: 1,
-    type: 'all'
+    type: "all",
   });
 
   const cities = [
-    'Madrid', 'Barcelona', 'Valencia', 'Sevilla', 'Bilbao',
-    'Málaga', 'Murcia', 'Palma', 'Las Palmas', 'Valladolid'
+    "Pinar del Río",
+    "Artemisa",
+    "La Habana",
+    "Mayabeque",
+    "Matanzas",
+    "Cienfuegos",
+    "Villa Clara",
+    "Sancti Spíritus",
+    "Ciego de Ávila",
+    "Camagüey",
+    "Las Tunas",
+    "Holguín",
+    "Granma",
+    "Santiago de Cuba",
+    "Guantánamo",
+    "Isla de la Juventud",
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -38,14 +52,14 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
     setSearchParams({
       ...searchParams,
       from: searchParams.to,
-      to: searchParams.from
+      to: searchParams.from,
     });
   };
 
   const getTomorrowDate = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0];
+    return tomorrow.toISOString().split("T")[0];
   };
 
   return (
@@ -54,18 +68,23 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
         {/* Transport Type Filter */}
         <div className="flex flex-wrap gap-2">
           {[
-            { value: 'all', label: 'Todos' },
-            { value: 'train', label: 'Trenes' },
-            { value: 'bus', label: 'Autobuses' }
-          ].map(option => (
+            { value: "all", label: "Todos" },
+            { value: "train", label: "Trenes" },
+            { value: "bus", label: "Autobuses" },
+          ].map((option) => (
             <button
               key={option.value}
               type="button"
-              onClick={() => setSearchParams({ ...searchParams, type: option.value as SearchParams['type'] })}
+              onClick={() =>
+                setSearchParams({
+                  ...searchParams,
+                  type: option.value as SearchParams["type"],
+                })
+              }
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
                 searchParams.type === option.value
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
               }`}
             >
               {option.label}
@@ -83,13 +102,17 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
               <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <select
                 value={searchParams.from}
-                onChange={(e) => setSearchParams({ ...searchParams, from: e.target.value })}
+                onChange={(e) =>
+                  setSearchParams({ ...searchParams, from: e.target.value })
+                }
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 required
               >
                 <option value="">Seleccionar ciudad</option>
-                {cities.map(city => (
-                  <option key={city} value={city}>{city}</option>
+                {cities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
                 ))}
               </select>
             </div>
@@ -115,14 +138,20 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
               <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <select
                 value={searchParams.to}
-                onChange={(e) => setSearchParams({ ...searchParams, to: e.target.value })}
+                onChange={(e) =>
+                  setSearchParams({ ...searchParams, to: e.target.value })
+                }
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 required
               >
                 <option value="">Seleccionar ciudad</option>
-                {cities.filter(city => city !== searchParams.from).map(city => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
+                {cities
+                  .filter((city) => city !== searchParams.from)
+                  .map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>
@@ -137,7 +166,9 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
               <input
                 type="date"
                 value={searchParams.date}
-                onChange={(e) => setSearchParams({ ...searchParams, date: e.target.value })}
+                onChange={(e) =>
+                  setSearchParams({ ...searchParams, date: e.target.value })
+                }
                 min={getTomorrowDate()}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 required
@@ -156,12 +187,17 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
               <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <select
                 value={searchParams.passengers}
-                onChange={(e) => setSearchParams({ ...searchParams, passengers: parseInt(e.target.value) })}
+                onChange={(e) =>
+                  setSearchParams({
+                    ...searchParams,
+                    passengers: parseInt(e.target.value),
+                  })
+                }
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
-                {[1, 2, 3, 4, 5, 6].map(num => (
+                {[1, 2, 3, 4, 5, 6].map((num) => (
                   <option key={num} value={num}>
-                    {num} {num === 1 ? 'pasajero' : 'pasajeros'}
+                    {num} {num === 1 ? "pasajero" : "pasajeros"}
                   </option>
                 ))}
               </select>

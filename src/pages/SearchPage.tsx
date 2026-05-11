@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import SearchForm, { SearchParams } from '../components/search/SearchForm';
-import RouteCard from '../components/search/RouteCard';
-import { Route, useBooking } from '../contexts/BookingContext';
+import React, { useState } from "react";
+import SearchForm, { SearchParams } from "../components/search/SearchForm";
+import RouteCard from "../components/search/RouteCard";
+import { Route, useBooking } from "../contexts/BookingContext";
 
 interface SearchPageProps {
   onNavigate: (page: string) => void;
@@ -16,90 +16,92 @@ const SearchPage: React.FC<SearchPageProps> = ({ onNavigate }) => {
   // Mock route data
   const mockRoutes: Route[] = [
     {
-      id: '1',
-      type: 'train',
-      from: 'Madrid',
-      to: 'Barcelona',
-      departure: '08:30',
-      arrival: '11:15',
-      duration: '2h 45m',
-      price: 45.99,
+      id: "1",
+      type: "bus",
+      from: "La Habana",
+      to: "Santiago de Cuba",
+      departure: "07:00",
+      arrival: "19:00",
+      duration: "12h 00m",
+      price: 850,
       available: 12,
-      company: 'Renfe AVE',
-      amenities: ['wifi', 'coffee', 'power outlets']
+      company: "Viazul",
+      amenities: ["aire acondicionado", "asientos reclinables", "baño a bordo"],
     },
     {
-      id: '2',
-      type: 'bus',
-      from: 'Madrid',
-      to: 'Barcelona',
-      departure: '09:00',
-      arrival: '16:30',
-      duration: '7h 30m',
-      price: 25.50,
+      id: "2",
+      type: "bus",
+      from: "La Habana",
+      to: "Santiago de Cuba",
+      departure: "15:00",
+      arrival: "03:00",
+      duration: "12h 00m",
+      price: 750,
       available: 8,
-      company: 'ALSA',
-      amenities: ['wifi', 'air conditioning', 'entertainment']
+      company: "Astro",
+      amenities: ["aire acondicionado", "asientos reclinables"],
     },
     {
-      id: '3',
-      type: 'train',
-      from: 'Madrid',
-      to: 'Barcelona',
-      departure: '14:20',
-      arrival: '17:05',
-      duration: '2h 45m',
-      price: 52.75,
+      id: "3",
+      type: "bus",
+      from: "La Habana",
+      to: "Holguín",
+      departure: "08:00",
+      arrival: "18:30",
+      duration: "10h 30m",
+      price: 700,
       available: 15,
-      company: 'Renfe AVE',
-      amenities: ['wifi', 'restaurant', 'power outlets']
+      company: "Viazul",
+      amenities: ["aire acondicionado", "asientos reclinables", "baño a bordo"],
     },
     {
-      id: '4',
-      type: 'bus',
-      from: 'Madrid',
-      to: 'Barcelona',
-      departure: '22:15',
-      arrival: '06:45',
-      duration: '8h 30m',
-      price: 22.90,
+      id: "4",
+      type: "bus",
+      from: "La Habana",
+      to: "Camagüey",
+      departure: "06:30",
+      arrival: "14:00",
+      duration: "7h 30m",
+      price: 550,
       available: 5,
-      company: 'FlixBus',
-      amenities: ['wifi', 'reclining seats', 'usb charging']
-    }
+      company: "Viazul",
+      amenities: ["aire acondicionado", "asientos reclinables"],
+    },
   ];
 
   const handleSearch = async (searchParams: SearchParams) => {
     setIsSearching(true);
     setHasSearched(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     // Filter results based on search parameters
-    let filteredRoutes = mockRoutes.filter(route => {
-      const matchesType = searchParams.type === 'all' || route.type === searchParams.type;
-      const matchesRoute = route.from.toLowerCase().includes(searchParams.from.toLowerCase()) &&
-                          route.to.toLowerCase().includes(searchParams.to.toLowerCase());
+    let filteredRoutes = mockRoutes.filter((route) => {
+      const matchesType =
+        searchParams.type === "all" || route.type === searchParams.type;
+      const matchesRoute =
+        route.from.toLowerCase().includes(searchParams.from.toLowerCase()) &&
+        route.to.toLowerCase().includes(searchParams.to.toLowerCase());
       return matchesType && matchesRoute;
     });
-    
+
     // If no exact matches, show all routes as mock data
     if (filteredRoutes.length === 0) {
-      filteredRoutes = mockRoutes.map(route => ({
+      filteredRoutes = mockRoutes.map((route) => ({
         ...route,
         from: searchParams.from,
-        to: searchParams.to
+        to: searchParams.to,
       }));
     }
-    
+
     setSearchResults(filteredRoutes);
     setIsSearching(false);
   };
 
   const handleSelectRoute = (route: Route) => {
     selectRoute(route);
-    onNavigate('booking');
+    onNavigate("booking");
   };
 
   return (
@@ -119,7 +121,9 @@ const SearchPage: React.FC<SearchPageProps> = ({ onNavigate }) => {
         {isSearching && (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <span className="ml-4 text-gray-600 dark:text-gray-400">Buscando rutas disponibles...</span>
+            <span className="ml-4 text-gray-600 dark:text-gray-400">
+              Buscando rutas disponibles...
+            </span>
           </div>
         )}
 
@@ -135,9 +139,9 @@ const SearchPage: React.FC<SearchPageProps> = ({ onNavigate }) => {
                     Ordenar por: precio, horario, duración
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
-                  {searchResults.map(route => (
+                  {searchResults.map((route) => (
                     <RouteCard
                       key={route.id}
                       route={route}
@@ -167,7 +171,8 @@ const SearchPage: React.FC<SearchPageProps> = ({ onNavigate }) => {
               Comienza tu búsqueda
             </h2>
             <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-              Selecciona tu origen, destino y fecha para encontrar las mejores opciones de viaje
+              Selecciona tu origen, destino y fecha para encontrar las mejores
+              opciones de viaje
             </p>
           </div>
         )}
