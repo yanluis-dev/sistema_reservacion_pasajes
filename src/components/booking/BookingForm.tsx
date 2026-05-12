@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Mail, Phone, CreditCard, Calendar, Shield } from 'lucide-react';
+import { User, Mail, Phone } from 'lucide-react';
 import { Route } from '../../contexts/BookingContext';
 
 interface BookingFormProps {
@@ -31,10 +31,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ route, selectedSeats, onSubmi
   );
   const [contactEmail, setContactEmail] = useState('');
   const [contactPhone, setContactPhone] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('card');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const totalPrice = route.price * selectedSeats.length;
@@ -70,19 +66,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ route, selectedSeats, onSubmi
       newErrors.contactPhone = 'Teléfono requerido';
     }
 
-    // Validate payment info
-    if (paymentMethod === 'card') {
-      if (!cardNumber.trim()) {
-        newErrors.cardNumber = 'Número de tarjeta requerido';
-      }
-      if (!expiryDate.trim()) {
-        newErrors.expiryDate = 'Fecha de vencimiento requerida';
-      }
-      if (!cvv.trim()) {
-        newErrors.cvv = 'CVV requerido';
-      }
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -95,7 +78,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ route, selectedSeats, onSubmi
         passengers,
         contactEmail,
         contactPhone,
-        paymentMethod,
+        paymentMethod: '',
         totalPrice
       });
     }
@@ -110,7 +93,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ route, selectedSeats, onSubmi
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
       <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-        Completar Reserva
+        Información de Pasajeros
       </h3>
 
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -163,7 +146,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ route, selectedSeats, onSubmi
                     value={passenger.id}
                     onChange={(e) => updatePassenger(index, 'id', e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    placeholder="DNI / Pasaporte"
+                    placeholder="Documento de Identidad"
                   />
                   {errors[`passenger-${index}-id`] && (
                     <p className="text-red-500 text-xs mt-1">{errors[`passenger-${index}-id`]}</p>
@@ -209,104 +192,13 @@ const BookingForm: React.FC<BookingFormProps> = ({ route, selectedSeats, onSubmi
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  placeholder="+34 600 000 000"
+                  placeholder="+53 55555555"
                 />
                 {errors.contactPhone && (
                   <p className="text-red-500 text-xs mt-1">{errors.contactPhone}</p>
                 )}
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Payment Information */}
-        <div className="space-y-4">
-          <h4 className="font-medium text-gray-900 dark:text-white">Método de Pago</h4>
-          
-          <div className="space-y-4">
-            <div className="flex gap-4">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="card"
-                  checked={paymentMethod === 'card'}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="mr-2"
-                />
-                <span className="text-gray-700 dark:text-gray-300">Tarjeta de Crédito/Débito</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="paypal"
-                  checked={paymentMethod === 'paypal'}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="mr-2"
-                />
-                <span className="text-gray-700 dark:text-gray-300">PayPal</span>
-              </label>
-            </div>
-
-            {paymentMethod === 'card' && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Número de Tarjeta
-                  </label>
-                  <div className="relative">
-                    <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <input
-                      type="text"
-                      value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="1234 5678 9012 3456"
-                    />
-                    {errors.cardNumber && (
-                      <p className="text-red-500 text-xs mt-1">{errors.cardNumber}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Fecha de Vencimiento
-                  </label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <input
-                      type="text"
-                      value={expiryDate}
-                      onChange={(e) => setExpiryDate(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="MM/YY"
-                    />
-                    {errors.expiryDate && (
-                      <p className="text-red-500 text-xs mt-1">{errors.expiryDate}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    CVV
-                  </label>
-                  <div className="relative">
-                    <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <input
-                      type="text"
-                      value={cvv}
-                      onChange={(e) => setCvv(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="123"
-                    />
-                    {errors.cvv && (
-                      <p className="text-red-500 text-xs mt-1">{errors.cvv}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -321,9 +213,9 @@ const BookingForm: React.FC<BookingFormProps> = ({ route, selectedSeats, onSubmi
           </button>
           <button
             type="submit"
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
           >
-            Confirmar Reserva - {formatPrice(totalPrice)}
+            Continuar al Pago
           </button>
         </div>
       </form>

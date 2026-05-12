@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import SeatSelector from '../components/booking/SeatSelector';
 import BookingForm, { BookingData } from '../components/booking/BookingForm';
+import PaymentForm, { PaymentData } from '../components/booking/PaymentForm';
 import { useBooking } from '../contexts/BookingContext';
 import { useNotification } from '../contexts/NotificationContext';
 
@@ -12,8 +13,9 @@ interface BookingPageProps {
 const BookingPage: React.FC<BookingPageProps> = ({ onNavigate }) => {
   const { selectedRoute, selectedSeats, selectSeat, deselectSeat, addBooking, clearSelection } = useBooking();
   const { showNotification } = useNotification();
-  const [currentStep, setCurrentStep] = useState<'seats' | 'details' | 'confirmation'>('seats');
+  const [currentStep, setCurrentStep] = useState<'seats' | 'details' | 'payment' | 'confirmation'>('seats');
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
+  const [passengerData, setPassengerData] = useState<any>(null);
 
   if (!selectedRoute) {
     return (
@@ -50,13 +52,23 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate }) => {
   };
 
   const handleBookingSubmit = (data: BookingData) => {
-    setBookingData(data);
+    setPassengerData(data);
+    setCurrentStep('payment');
+  };
+
+  const handlePaymentSubmit = (paymentData: any) => {
+    const completeBookingData = {
+      ...passengerData,
+      ...paymentData
+    };
+    
+    setBookingData(completeBookingData);
     addBooking({
       route: selectedRoute,
       selectedSeats,
-      passengers: data.passengers,
-      totalPrice: data.totalPrice,
-      paymentMethod: data.paymentMethod
+      passengers: completeBookingData.passengers,
+      totalPrice: completeBookingData.totalPrice,
+      paymentMethod: completeBookingData.paymentMethod
     });
     
     // Mostrar notificación de éxito
@@ -74,6 +86,10 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate }) => {
     setCurrentStep('seats');
   };
 
+  const handleBackToDetails = () => {
+    setCurrentStep('details');
+  };
+
   const handleNewSearch = () => {
     clearSelection();
     onNavigate('search');
@@ -88,7 +104,8 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate }) => {
 
   const steps = [
     { id: 'seats', name: 'Seleccionar Asientos', completed: currentStep !== 'seats' },
-    { id: 'details', name: 'Detalles de Reserva', completed: currentStep === 'confirmation' },
+    { id: 'details', name: 'Información de Pasajeros', completed: currentStep === 'payment' || currentStep === 'confirmation' },
+    { id: 'payment', name: 'Método de Pago', completed: currentStep === 'confirmation' },
     { id: 'confirmation', name: 'Confirmación', completed: false }
   ];
 
@@ -98,7 +115,15 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate }) => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <button
-            onClick={() => currentStep === 'seats' ? onNavigate('search') : handleBackToSeatSelection()}
+            onClick={() => {
+              if (currentStep === 'seats') {
+                onNavigate('search');
+              } else if (currentStep === 'details') {
+                handleBackToSeatSelection();
+              } else if (currentStep === 'payment') {
+                handleBackToDetails();
+              }
+            }}
             className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -209,6 +234,16 @@ const BookingPage: React.FC<BookingPageProps> = ({ onNavigate }) => {
             selectedSeats={selectedSeats}
             onSubmit={handleBookingSubmit}
             onCancel={handleBackToSeatSelection}
+          />
+        )}
+
+        {currentStep === 'payment' && passengerData && (
+          <PaymentForm
+            route={selectedRoute}
+            selectedSeats={selectedSeats}
+            totalPrice={passengerData.totalPrice}
+            onSubmit={handlePaymentSubmit}
+            onCancel={handleBackToDetails}
           />
         )}
 

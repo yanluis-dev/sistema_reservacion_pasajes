@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MapPin, Calendar } from "lucide-react";
+import { MapPin, Calendar, ArrowLeftRight } from "lucide-react";
 
 interface SearchFormProps {
   onSearch: (searchParams: SearchParams) => void;
@@ -52,6 +52,14 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
     return tomorrow.toISOString().split("T")[0];
   };
 
+  const handleSwapLocations = () => {
+    setSearchParams({
+      ...searchParams,
+      from: searchParams.to,
+      to: searchParams.from,
+    });
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-8">
       <div className="mb-6">
@@ -64,7 +72,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-end">
           {/* Origin */}
           <div className="relative">
             <label className="flex items-center text-base font-semibold text-gray-700 dark:text-gray-300 mb-3">
@@ -86,6 +94,18 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Swap Button */}
+          <div className="hidden md:block pb-1">
+            <button
+              type="button"
+              onClick={handleSwapLocations}
+              className="p-3 rounded-full bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-600 dark:text-blue-300 transition-colors duration-200"
+              title="Intercambiar origen y destino"
+            >
+              <ArrowLeftRight className="h-5 w-5" />
+            </button>
           </div>
 
           {/* Destination */}
@@ -112,6 +132,21 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch }) => {
                 ))}
             </select>
           </div>
+        </div>
+
+        {/* Swap Button for Mobile */}
+        <div className="md:hidden -mt-3">
+          <button
+            type="button"
+            onClick={handleSwapLocations}
+            className="w-full py-2 px-4 rounded-lg bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-600 dark:text-blue-300 transition-colors duration-200 flex items-center justify-center space-x-2"
+          >
+            <ArrowLeftRight className="h-4 w-4" />
+            <span className="text-sm font-medium">Intercambiar origen y destino</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           {/* Date */}
           <div className="relative">
